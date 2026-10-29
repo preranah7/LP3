@@ -1,0 +1,59 @@
+import pandas as pd
+import numpy as np
+
+from sklearn.model_selection import train_test_split
+from sklearn.linear_model import LinearRegression
+from sklearn.ensemble import RandomForestRegressor
+from sklearn.metrics import r2_score, mean_squared_error
+
+df = pd.read_csv("uber.csv")
+
+df = df.dropna()
+
+columns = [
+    "pickup_longitude",
+    "pickup_latitude",
+    "dropoff_longitude",
+    "dropoff_latitude",
+    "fare_amount"
+]
+
+for col in columns:
+    df[col] = pd.to_numeric(df[col], errors="coerce")
+
+df = df.dropna(subset=columns)
+df = df[df["fare_amount"] >= 0]
+
+# Identify and remove extreme fare outliers
+upper_limit = df["fare_amount"].quantile(0.99)
+df = df[df["fare_amount"] <= upper_limit]
+
+print("Correlation Matrix:")
+print(df[columns].corr().round(2))
+
+X = df[columns[:-1]]
+y = df["fare_amount"]
+
+X_train, X_test, y_train, y_test = train_test_split(
+    X, y, test_size=0.2, random_state=42
+)
+
+models = {
+    "Linear Regression": LinearRegression(),
+    "Random Forest": RandomForestRegressor(
+        n_estimators=50, random_state=42, n_jobs=-1
+    )
+}
+
+for name, model in models.items():
+    model.fit(X_train, y_train)
+    predictions = model.predict(X_test)
+
+    r2 = r2_score(y_test, predictions)
+    rmse = np.sqrt(
+        mean_squared_error(y_test, predictions)
+    )
+
+    print("\n", name)
+    print("R2 Score:", round(r2, 3))
+    print("RMSE:", round(rmse, 3))
