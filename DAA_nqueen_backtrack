@@ -1,0 +1,146 @@
+//CPP Code
+#include <iostream>
+using namespace std;
+
+#define N 8
+
+void printSolution(int board[N][N]) {
+    for (int i = 0; i < N; i++) {
+        for (int j = 0; j < N; j++) {
+            cout << board[i][j] << " ";
+        }
+        cout << endl;
+    }
+}
+
+bool isSafe(int board[N][N], int row, int col) {
+    int i, j;
+
+    // Check the left side of the row
+    for (i = 0; i < col; i++) {
+        if (board[row][i])
+            return false;
+    }
+
+    // Check upper-left diagonal
+    for (i = row, j = col; i >= 0 && j >= 0; i--, j--) {
+        if (board[i][j])
+            return false;
+    }
+
+    // Check lower-left diagonal
+    for (i = row, j = col; i < N && j >= 0; i++, j--) {
+        if (board[i][j])
+            return false;
+    }
+
+    return true;
+}
+
+bool solveNQUtil(int board[N][N], int col) {
+    // All queens have been placed
+    if (col >= N)
+        return true;
+
+    // Try every row in the current column
+    for (int row = 0; row < N; row++) {
+        if (isSafe(board, row, col)) {
+            board[row][col] = 1;
+
+            if (solveNQUtil(board, col + 1))
+                return true;
+
+            // Backtrack
+            board[row][col] = 0;
+        }
+    }
+
+    return false;
+}
+
+int main() {
+    int board[N][N] = {0};
+
+    // Place the first queen at row 0, column 0
+    board[0][0] = 1;
+
+    // Start placing the remaining queens from column 1
+    if (solveNQUtil(board, 1)) {
+        cout << "Solution for 8 Queens:\n";
+        printSolution(board);
+    } else {
+        cout << "Solution does not exist";
+    }
+
+    return 0;
+}
+
+
+//Python Code
+
+N = 8
+
+def print_solution(board):
+    for row in board:
+        print(*row)
+
+
+def is_safe(board, row, col):
+    # Check the left side of the row
+    for j in range(col):
+        if board[row][j] == 1:
+            return False
+
+    # Check upper-left diagonal
+    i, j = row, col
+    while i >= 0 and j >= 0:
+        if board[i][j] == 1:
+            return False
+        i -= 1
+        j -= 1
+
+    # Check lower-left diagonal
+    i, j = row, col
+    while i < N and j >= 0:
+        if board[i][j] == 1:
+            return False
+        i += 1
+        j -= 1
+
+    return True
+
+
+def solve_nq_util(board, col):
+    # All queens have been placed
+    if col >= N:
+        return True
+
+    # Try every row in the current column
+    for row in range(N):
+        if is_safe(board, row, col):
+            board[row][col] = 1
+
+            if solve_nq_util(board, col + 1):
+                return True
+
+            # Backtrack
+            board[row][col] = 0
+
+    return False
+
+
+def solve_nq():
+    board = [[0] * N for _ in range(N)]
+
+    # Place the first queen at row 0, column 0
+    board[0][0] = 1
+
+    # Place the remaining queens
+    if solve_nq_util(board, 1):
+        print("Solution for 8 Queens:")
+        print_solution(board)
+    else:
+        print("Solution does not exist")
+
+
+solve_nq()
