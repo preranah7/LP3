@@ -1,0 +1,39 @@
+
+import random
+
+def partition(arr, low, high):
+    pivot = arr[high]
+    i = low - 1
+
+    for j in range(low, high):
+        if arr[j] <= pivot:
+            i += 1
+            arr[i], arr[j] = arr[j], arr[i]
+
+    arr[i + 1], arr[high] = arr[high], arr[i + 1]
+    return i + 1
+
+
+def quick_sort(arr, low, high, randomized=False):
+    if low < high:
+        if randomized:
+            p = random.randint(low, high)
+            arr[p], arr[high] = arr[high], arr[p]
+
+        pi = partition(arr, low, high)
+
+        quick_sort(arr, low, pi - 1, randomized)
+        quick_sort(arr, pi + 1, high, randomized)
+
+
+data = [9, 4, 7, 3, 10, 5]
+
+a = data.copy()
+b = data.copy()
+
+quick_sort(a, 0, len(a) - 1)
+quick_sort(b, 0, len(b) - 1, True)
+
+print("Original Array:", data)
+print("Deterministic Quick Sort:", a)
+print("Randomized Quick Sort:", b)
