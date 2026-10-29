@@ -1,0 +1,32 @@
+
+def fractional_knapsack(values, weights, capacity):
+    items = sorted(
+        zip(values, weights),
+        key=lambda item: item[0] / item[1],
+        reverse=True
+    )
+
+    total_profit = 0
+
+    for value, weight in items:
+        if capacity <= 0:
+            break
+
+        if weight <= capacity:
+            total_profit += value
+            capacity -= weight
+        else:
+            total_profit += value * capacity / weight
+            capacity = 0
+
+    return total_profit
+
+
+values = [60, 100, 120]
+weights = [10, 20, 30]
+capacity = 50
+
+profit = fractional_knapsack(values, weights, capacity)
+
+print("Maximum profit:", profit)
+
